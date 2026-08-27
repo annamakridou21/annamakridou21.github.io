@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Test</title>
+  
+  <!-- Added a standard SHA-256 library to hash the email on the client side -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
+
 <!-- TikTok Pixel Code Start -->
 <script>
 !function (w, d, t) {
@@ -13,34 +17,6 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 
   ttq.load('DA62U6RC77UC1JSQS2AG');
   ttq.page();
-  
-  // --- ADDED EVENT CODE STARTS HERE ---
-  ttq.identify({
-    "email": "<hashed_email_address>", // string. The email of the customer if available. It must be hashed with SHA-256 on the client side.
-    "phone_number": "<hashed_phone_number>", // string. The phone number of the customer if available. It must be hashed with SHA-256 on the client side.
-    "external_id": "<hashed_external_id>" // string. Any unique identifier, such as loyalty membership IDs, user IDs, and external cookie IDs.It must be hashed with SHA-256 on the client side.
-  });
-
-  ttq.track('Search', {
-    "contents": [
-      {
-        "content_id": "<content_identifier>", // string. ID of the product. Example: "1077218".
-        "content_type": "<content_type>", // string. Either product or product_group.
-        "content_name": "<content_name>", // string. The name of the page or product. Example: "shirt".
-        "content_category": "<content_category>", // string. The category of the page or product. Example: "apparel".
-        "price": "<content_price>", // number. The price of a single item. Example: 25.
-        "num_items": "<num_items>", // number. The number of items. Example: 4.
-        "brand": "<brand>" // string. The brand name of the page or product. Example: "Nike".
-      }
-    ],
-    "value": "<content_value>", // number. Value of the order or items sold. Example: 100.
-    "currency": "<content_currency>", // string. The 4217 currency code. Example: "USD".
-    "search_string": "<search_keywords>", // string. The word or phrase used to search. Example: "SAVE10COUPON".
-    "description": "<content_description>", // string. Non-hashed public IP address of the browser.
-    "status": "<content_status>" // string. The status of an order, item, or service. Example: "submitted".
-  });
-  // --- ADDED EVENT CODE ENDS HERE ---
-
 }(window, document, 'ttq');
 </script>
 <!-- TikTok Pixel Code End -->
@@ -48,5 +24,59 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
 </head>
 <body>
   <h1>Welcome to my website</h1>
+  
+  <!-- Email Form Starts Here -->
+  <h2>Subscribe for updates</h2>
+  <form id="emailForm">
+    <label for="emailInput">Enter your email address:</label><br><br>
+    
+    <!-- 
+      For AUTOMATIC Advanced Matching, standard types and names like "email" 
+      allow the TikTok Pixel to recognize the field on its own. 
+    -->
+    <input type="email" id="emailInput" name="email" required placeholder="you@example.com">
+    <button type="submit">Submit</button>
+  </form>
+
+  <!-- Script to handle form submission and Manual Advanced Matching -->
+  <script>
+    document.getElementById('emailForm').addEventListener('submit', function(event) {
+      // Prevents the page from reloading immediately so the pixel has time to fire
+      event.preventDefault(); 
+      
+      // 1. Get the email the user typed, remove spaces, and make lowercase
+      var rawEmail = document.getElementById('emailInput').value.trim().toLowerCase();
+      
+      // 2. Hash the email using SHA-256 (Required for client-side Manual Matching)
+      var hashedEmail = sha256(rawEmail);
+
+      // 3. Send the hashed email to TikTok via Identify
+      ttq.identify({
+        "email": hashedEmail 
+      });
+
+      // 4. Fire your tracking event (e.g., 'Search', 'CompleteRegistration', etc.)
+      ttq.track('Search', {
+        "contents": [
+          {
+            "content_id": "1077218", 
+            "content_type": "product", 
+            "content_name": "shirt", 
+            "content_category": "apparel", 
+            "price": 25, 
+            "num_items": 1, 
+            "brand": "Nike" 
+          }
+        ],
+        "value": 25, 
+        "currency": "USD", 
+        "search_string": "SAVE10COUPON", 
+        "status": "submitted" 
+      });
+
+      // Optional: Give the user feedback or redirect them
+      alert("Email submitted and tracked!");
+    });
+  </script>
 </body>
 </html>
