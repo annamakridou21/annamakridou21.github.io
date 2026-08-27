@@ -45,6 +45,17 @@
   </form>
   
   <script>
+    // --- Send Email on Blur (Clicking away from the field) ---
+    document.getElementById('emailInput').addEventListener('blur', function() {
+      var rawEmail = this.value.trim().toLowerCase();
+      if (rawEmail) {
+        ttq.identify({
+          email: sha256(rawEmail)
+        });
+        console.log("Email sent to TikTok without form submission!");
+      }
+    });
+
     // --- Form Submission ---
     document.getElementById('trackingForm').addEventListener('submit', function(event) {
       event.preventDefault(); 
