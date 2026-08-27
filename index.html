@@ -25,9 +25,11 @@
     <label for="phoneInput">Phone Number:</label><br>
     <input type="tel" id="phoneInput" name="phone_number"><br><br>
 
+    <!-- Kept for AUTOMATIC Advanced Matching to scrape -->
     <label for="nameInput">Name:</label><br>
     <input type="text" id="nameInput" name="name"><br><br>
 
+    <!-- Kept for AUTOMATIC Advanced Matching to scrape -->
     <label for="addressInput">Address:</label><br>
     <input type="text" id="addressInput" name="address"><br><br>
 
@@ -40,22 +42,21 @@
     document.getElementById('trackingForm').addEventListener('submit', function(event) {
       event.preventDefault(); 
       
+      // We only manually grab and hash the 3 fields supported by ttq.identify
       var rawEmail = document.getElementById('emailInput').value.trim().toLowerCase();
       var rawPhone = document.getElementById('phoneInput').value.trim();
-      var rawName = document.getElementById('nameInput').value.trim().toLowerCase();
-      var rawAddress = document.getElementById('addressInput').value.trim().toLowerCase();
       var rawExtId = document.getElementById('externalIdInput').value.trim();
       
       var identifyData = {};
       
       if (rawEmail) identifyData.email = sha256(rawEmail);
       if (rawPhone) identifyData.phone_number = sha256(rawPhone);
-      if (rawName) identifyData.name = sha256(rawName);
-      if (rawAddress) identifyData.address = sha256(rawAddress);
       if (rawExtId) identifyData.external_id = sha256(rawExtId);
       
+      // Submit the manual parameters
       ttq.identify(identifyData);
 
+      // Fire the track event
       ttq.track('Search', {
         "contents": [
           {
