@@ -11,9 +11,36 @@
 var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
 ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
 
-
   ttq.load('DA62U6RC77UC1JSQS2AG');
   ttq.page();
+  
+  // --- ADDED EVENT CODE STARTS HERE ---
+  ttq.identify({
+    "email": "<hashed_email_address>", // string. The email of the customer if available. It must be hashed with SHA-256 on the client side.
+    "phone_number": "<hashed_phone_number>", // string. The phone number of the customer if available. It must be hashed with SHA-256 on the client side.
+    "external_id": "<hashed_external_id>" // string. Any unique identifier, such as loyalty membership IDs, user IDs, and external cookie IDs.It must be hashed with SHA-256 on the client side.
+  });
+
+  ttq.track('Search', {
+    "contents": [
+      {
+        "content_id": "<content_identifier>", // string. ID of the product. Example: "1077218".
+        "content_type": "<content_type>", // string. Either product or product_group.
+        "content_name": "<content_name>", // string. The name of the page or product. Example: "shirt".
+        "content_category": "<content_category>", // string. The category of the page or product. Example: "apparel".
+        "price": "<content_price>", // number. The price of a single item. Example: 25.
+        "num_items": "<num_items>", // number. The number of items. Example: 4.
+        "brand": "<brand>" // string. The brand name of the page or product. Example: "Nike".
+      }
+    ],
+    "value": "<content_value>", // number. Value of the order or items sold. Example: 100.
+    "currency": "<content_currency>", // string. The 4217 currency code. Example: "USD".
+    "search_string": "<search_keywords>", // string. The word or phrase used to search. Example: "SAVE10COUPON".
+    "description": "<content_description>", // string. Non-hashed public IP address of the browser.
+    "status": "<content_status>" // string. The status of an order, item, or service. Example: "submitted".
+  });
+  // --- ADDED EVENT CODE ENDS HERE ---
+
 }(window, document, 'ttq');
 </script>
 <!-- TikTok Pixel Code End -->
