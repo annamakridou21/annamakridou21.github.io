@@ -11,6 +11,20 @@
   var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
   ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
     ttq.load('DA62U6RC77UC1JSQS2AG');
+    
+    // --- Global Identify Check (Manual Advanced Matching) ---
+    var identifyData = {};
+    if (localStorage.getItem('ttq_first_name')) identifyData.first_name = localStorage.getItem('ttq_first_name');
+    if (localStorage.getItem('ttq_last_name'))  identifyData.last_name  = localStorage.getItem('ttq_last_name');
+    if (localStorage.getItem('ttq_email'))       identifyData.email       = localStorage.getItem('ttq_email');
+    if (localStorage.getItem('ttq_phone'))       identifyData.phone_number = localStorage.getItem('ttq_phone');
+    if (localStorage.getItem('ttq_address'))     identifyData.address     = localStorage.getItem('ttq_address');
+    if (localStorage.getItem('ttq_extid'))       identifyData.external_id = localStorage.getItem('ttq_extid');
+    
+    if (Object.keys(identifyData).length > 0) {
+      ttq.identify(identifyData);
+    }
+
     ttq.page();
   }(window, document, 'ttq');
   </script>
@@ -31,12 +45,14 @@
 
   <h2>User Information</h2>
   <form id="trackingForm">
+    <label for="firstNameInput">First Name:</label><br>
+    <input type="text" id="firstNameInput" name="first_name"><br><br>
+    <label for="lastNameInput">Last Name:</label><br>
+    <input type="text" id="lastNameInput" name="last_name"><br><br>
     <label for="emailInput">Email:</label><br>
     <input type="email" id="emailInput" name="email"><br><br>
     <label for="phoneInput">Phone Number:</label><br>
     <input type="tel" id="phoneInput" name="phone_number"><br><br>
-    <label for="nameInput">Name:</label><br>
-    <input type="text" id="nameInput" name="name"><br><br>
     <label for="addressInput">Address:</label><br>
     <input type="text" id="addressInput" name="address"><br><br>
     <label for="externalIdInput">Customer ID:</label><br>
@@ -45,24 +61,54 @@
   </form>
   
   <script>
+    // --- Helper to hash and save PII ---
+    function captureAndSavePII() {
+      var identifyData = {};
+      
+      var rawFirstName = document.getElementById('firstNameInput').value.trim().toLowerCase();
+      var rawLastName  = document.getElementById('lastNameInput').value.trim().toLowerCase();
+      var rawEmail     = document.getElementById('emailInput').value.trim().toLowerCase();
+      var rawPhone     = document.getElementById('phoneInput').value.trim();
+      var rawAddress   = document.getElementById('addressInput').value.trim().toLowerCase();
+      var rawExtId     = document.getElementById('externalIdInput').value.trim();
+      
+      if (rawFirstName) {
+        identifyData.first_name = sha256(rawFirstName);
+        localStorage.setItem('ttq_first_name', identifyData.first_name);
+      }
+      if (rawLastName) {
+        identifyData.last_name = sha256(rawLastName);
+        localStorage.setItem('ttq_last_name', identifyData.last_name);
+      }
+      if (rawEmail) {
+        identifyData.email = sha256(rawEmail);
+        localStorage.setItem('ttq_email', identifyData.email);
+      }
+      if (rawPhone) {
+        identifyData.phone_number = sha256(rawPhone);
+        localStorage.setItem('ttq_phone', identifyData.phone_number);
+      }
+      if (rawAddress) {
+        identifyData.address = sha256(rawAddress);
+        localStorage.setItem('ttq_address', identifyData.address);
+      }
+      if (rawExtId) {
+        identifyData.external_id = sha256(rawExtId);
+        localStorage.setItem('ttq_extid', identifyData.external_id);
+      }
+      
+      return identifyData;
+    }
+
     // --- Send PII on Blur (Clicking away from fields) ---
-    var piiInputs = ['emailInput', 'phoneInput', 'externalIdInput'];
+    var piiInputs = ['firstNameInput', 'lastNameInput', 'emailInput', 'phoneInput', 'addressInput', 'externalIdInput'];
     
     piiInputs.forEach(function(inputId) {
       document.getElementById(inputId).addEventListener('blur', function() {
-        var identifyData = {};
-        
-        var rawEmail = document.getElementById('emailInput').value.trim().toLowerCase();
-        var rawPhone = document.getElementById('phoneInput').value.trim();
-        var rawExtId = document.getElementById('externalIdInput').value.trim();
-        
-        if (rawEmail) identifyData.email = sha256(rawEmail);
-        if (rawPhone) identifyData.phone_number = sha256(rawPhone);
-        if (rawExtId) identifyData.external_id = sha256(rawExtId);
-        
+        var identifyData = captureAndSavePII();
         if (Object.keys(identifyData).length > 0) {
           ttq.identify(identifyData);
-          console.log("Updated PII sent to TikTok without form submission!");
+          console.log("Updated PII saved and sent to TikTok on blur!");
         }
       });
     });
@@ -71,17 +117,13 @@
     document.getElementById('trackingForm').addEventListener('submit', function(event) {
       event.preventDefault(); 
       
-      var rawEmail = document.getElementById('emailInput').value.trim().toLowerCase();
-      var rawPhone = document.getElementById('phoneInput').value.trim();
-      var rawExtId = document.getElementById('externalIdInput').value.trim();
-      
-      var identifyData = {};
-      if (rawEmail) identifyData.email = sha256(rawEmail);
-      if (rawPhone) identifyData.phone_number = sha256(rawPhone);
-      if (rawExtId) identifyData.external_id = sha256(rawExtId);
-      
-      ttq.identify(identifyData);
-      alert("Manual Identify Data Sent!");
+      var identifyData = captureAndSavePII();
+      if (Object.keys(identifyData).length > 0) {
+        ttq.identify(identifyData);
+        alert("Manual Identify Data Saved and Sent!");
+      } else {
+        alert("No PII data to send.");
+      }
     });
 
     // --- Fire All Events Button ---
