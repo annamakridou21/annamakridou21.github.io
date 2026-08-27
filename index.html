@@ -38,6 +38,7 @@
 
     <button type="submit">Submit</button>
   </form>
+  
   <script>
     document.getElementById('trackingForm').addEventListener('submit', function(event) {
       event.preventDefault(); 
@@ -56,25 +57,166 @@
       // Submit the manual parameters
       ttq.identify(identifyData);
 
-      // Fire the track event
-      ttq.track('Search', {
+      // Example of firing a specific event upon form submission:
+      ttq.track('SubmitApplication', {
         "contents": [
           {
-            "content_id": "1077218", 
-            "content_type": "product", 
-            "content_name": "shirt", 
-            "content_category": "apparel", 
-            "price": 25, 
-            "num_items": 1, 
-            "brand": "Nike" 
+            "content_id": "<content_identifier>", // string. ID of the product.
+            "content_type": "<content_type>", // string. Either product or product_group.
+            "content_name": "<content_name>", // string. The name of the page or product.
+            "content_category": "<content_category>", // string. The category of the page or product.
+            "price": "<content_price>", // number. The price of a single item.
+            "num_items": "<num_items>", // number. The number of items.
+            "brand": "<brand>" // string. The brand name of the page or product.
           }
         ],
-        "value": 25, 
-        "currency": "USD", 
-        "search_string": "SAVE10COUPON", 
-        "status": "submitted" 
+        "value": "<content_value>", // number. Value of the order or items sold.
+        "currency": "<content_currency>", // string. The 4217 currency code.
+        "search_string": "<search_keywords>", // string. The word or phrase used to search.
+        "description": "<content_description>", // string. Non-hashed public IP address of the browser.
+        "status": "<content_status>" // string. The status of an order, item, or service.
       });
     });
+
+    // ========================================================================
+    // TIKTOK PIXEL STANDARD EVENTS LIBRARY
+    // Call these specific functions elsewhere in your code based on user actions.
+    // Ensure you replace placeholder variables (e.g., "<content_identifier>") 
+    // with actual data before tracking.
+    // ========================================================================
+
+    function trackSearch() {
+        ttq.track('Search', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackAddPaymentInfo() {
+        ttq.track('AddPaymentInfo', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackAddToCart() {
+        ttq.track('AddToCart', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackAddToWishlist() {
+        ttq.track('AddToWishlist', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackApplicationApproval() {
+        ttq.track('ApplicationApproval', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackClickButton() {
+        ttq.track('ClickButton', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackCompleteRegistration() {
+        ttq.track('CompleteRegistration', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackContact() {
+        ttq.track('Contact', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackCustomizeProduct() {
+        ttq.track('CustomizeProduct', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackDownload() {
+        ttq.track('Download', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackFindLocation() {
+        ttq.track('FindLocation', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackLead() {
+        ttq.track('Lead', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackInitiateCheckout() {
+        ttq.track('InitiateCheckout', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackPlaceAnOrder() {
+        ttq.track('PlaceAnOrder', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackPurchase() {
+        ttq.track('Purchase', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackSchedule() {
+        ttq.track('Schedule', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackStartTrial() {
+        ttq.track('StartTrial', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackSubscribe() {
+        ttq.track('Subscribe', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
+
+    function trackViewContent() {
+        ttq.track('ViewContent', {
+            "contents": [{"content_id": "<content_identifier>", "content_type": "<content_type>", "content_name": "<content_name>", "content_category": "<content_category>", "price": "<content_price>", "num_items": "<num_items>", "brand": "<brand>"}],
+            "value": "<content_value>", "currency": "<content_currency>", "search_string": "<search_keywords>", "description": "<content_description>", "status": "<content_status>"
+        });
+    }
   </script>
 </body>
 </html>
