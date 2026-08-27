@@ -11,25 +11,25 @@
   var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
   ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
     ttq.load('DA62U6RC77UC1JSQS2AG');
-    
-    // --- Global Identify Check (Manual Advanced Matching) ---
-    var identifyData = {};
-    if (localStorage.getItem('ttq_first_name')) identifyData.first_name   = localStorage.getItem('ttq_first_name');
-    if (localStorage.getItem('ttq_last_name'))  identifyData.last_name    = localStorage.getItem('ttq_last_name');
-    if (localStorage.getItem('ttq_email'))      identifyData.email        = localStorage.getItem('ttq_email');
-    if (localStorage.getItem('ttq_phone'))      identifyData.phone_number = localStorage.getItem('ttq_phone');
-    if (localStorage.getItem('ttq_city'))       identifyData.city         = localStorage.getItem('ttq_city');
-    if (localStorage.getItem('ttq_state'))      identifyData.state        = localStorage.getItem('ttq_state');
-    if (localStorage.getItem('ttq_country'))    identifyData.country      = localStorage.getItem('ttq_country');
-    if (localStorage.getItem('ttq_zip'))        identifyData.zip_code     = localStorage.getItem('ttq_zip');
-    if (localStorage.getItem('ttq_extid'))      identifyData.external_id  = localStorage.getItem('ttq_extid');
-    
-    if (Object.keys(identifyData).length > 0) {
-      ttq.identify(identifyData);
-    }
-
     ttq.page();
   }(window, document, 'ttq');
+  </script>
+  <script>
+    // --- Global Identify on Page Load (Manual Advanced Matching via localStorage) ---
+    // Runs in a separate script block, safely outside the pixel IIFE
+    (function() {
+      var savedPII = {};
+      if (localStorage.getItem('ttq_first_name')) savedPII.first_name   = localStorage.getItem('ttq_first_name');
+      if (localStorage.getItem('ttq_last_name'))  savedPII.last_name    = localStorage.getItem('ttq_last_name');
+      if (localStorage.getItem('ttq_email'))      savedPII.email        = localStorage.getItem('ttq_email');
+      if (localStorage.getItem('ttq_phone'))      savedPII.phone_number = localStorage.getItem('ttq_phone');
+      if (localStorage.getItem('ttq_city'))       savedPII.city         = localStorage.getItem('ttq_city');
+      if (localStorage.getItem('ttq_state'))      savedPII.state        = localStorage.getItem('ttq_state');
+      if (localStorage.getItem('ttq_country'))    savedPII.country      = localStorage.getItem('ttq_country');
+      if (localStorage.getItem('ttq_zip'))        savedPII.zip_code     = localStorage.getItem('ttq_zip');
+      if (localStorage.getItem('ttq_extid'))      savedPII.external_id  = localStorage.getItem('ttq_extid');
+      if (Object.keys(savedPII).length > 0) { ttq.identify(savedPII); }
+    }());
   </script>
 </head>
 <body>
@@ -47,27 +47,33 @@
   <hr>
 
   <h2>User Information</h2>
-  <form id="trackingForm">
+  <!--
+    IMPORTANT: Inputs are intentionally placed OUTSIDE a <form> tag.
+    TikTok's Auto Advanced Matching has in_form:false, meaning it skips
+    scanning inputs inside <form> elements. Placing inputs outside the form
+    allows Auto AM to detect email and phone automatically.
+  -->
+  <div id="trackingForm">
     <label for="firstNameInput">First Name:</label><br>
-    <input type="text" id="firstNameInput" name="first_name"><br><br>
+    <input type="text" id="firstNameInput" name="first_name" autocomplete="given-name"><br><br>
     <label for="lastNameInput">Last Name:</label><br>
-    <input type="text" id="lastNameInput" name="last_name"><br><br>
+    <input type="text" id="lastNameInput" name="last_name" autocomplete="family-name"><br><br>
     <label for="emailInput">Email:</label><br>
-    <input type="email" id="emailInput" name="email"><br><br>
+    <input type="email" id="emailInput" name="email" autocomplete="email"><br><br>
     <label for="phoneInput">Phone Number:</label><br>
-    <input type="tel" id="phoneInput" name="phone_number"><br><br>
+    <input type="tel" id="phoneInput" name="phone_number" autocomplete="tel"><br><br>
     <label for="cityInput">City:</label><br>
-    <input type="text" id="cityInput" name="city"><br><br>
+    <input type="text" id="cityInput" name="city" autocomplete="address-level2"><br><br>
     <label for="stateInput">State:</label><br>
-    <input type="text" id="stateInput" name="state"><br><br>
+    <input type="text" id="stateInput" name="state" autocomplete="address-level1"><br><br>
     <label for="countryInput">Country:</label><br>
-    <input type="text" id="countryInput" name="country"><br><br>
+    <input type="text" id="countryInput" name="country" autocomplete="country-name"><br><br>
     <label for="zipInput">Zip Code:</label><br>
-    <input type="text" id="zipInput" name="zip_code"><br><br>
+    <input type="text" id="zipInput" name="zip_code" autocomplete="postal-code"><br><br>
     <label for="externalIdInput">Customer ID:</label><br>
     <input type="text" id="externalIdInput" name="external_id"><br><br>
-    <button type="submit">Submit Data & Identify</button>
-  </form>
+    <button type="button" id="manualSubmitBtn">Submit Data &amp; Identify</button>
+  </div>
   
   <script>
     // --- Helper to hash and save PII ---
@@ -110,10 +116,8 @@
       });
     });
 
-    // --- Form Submission ---
-    document.getElementById('trackingForm').addEventListener('submit', function(event) {
-      event.preventDefault(); 
-      
+    // --- Manual Submit Button ---
+    document.getElementById('manualSubmitBtn').addEventListener('click', function() {
       var identifyData = captureAndSavePII();
       if (Object.keys(identifyData).length > 0) {
         ttq.identify(identifyData);
@@ -125,13 +129,20 @@
 
     // --- Fire All Events Button ---
     document.getElementById('fireAllEventsBtn').addEventListener('click', function() {
-      
-        // add this before event code to all pages where PII data postback is expected and appropriate 
-ttq.identify({
-	"email": "<hashed_email_address>", // string. The email of the customer if available. It must be hashed with SHA-256 on the client side.
-	"phone_number": "<hashed_phone_number>", // string. The phone number of the customer if available. It must be hashed with SHA-256 on the client side.
-	"external_id": "<hashed_external_id>" // string. Any unique identifier, such as loyalty membership IDs, user IDs, and external cookie IDs.It must be hashed with SHA-256 on the client side.
-});
+
+        // add this before event code to all pages where PII data postback is expected and appropriate
+        var savedPII = {};
+        if (localStorage.getItem('ttq_first_name')) savedPII.first_name   = localStorage.getItem('ttq_first_name');
+        if (localStorage.getItem('ttq_last_name'))  savedPII.last_name    = localStorage.getItem('ttq_last_name');
+        if (localStorage.getItem('ttq_email'))      savedPII.email        = localStorage.getItem('ttq_email');
+        if (localStorage.getItem('ttq_phone'))      savedPII.phone_number = localStorage.getItem('ttq_phone');
+        if (localStorage.getItem('ttq_city'))       savedPII.city         = localStorage.getItem('ttq_city');
+        if (localStorage.getItem('ttq_state'))      savedPII.state        = localStorage.getItem('ttq_state');
+        if (localStorage.getItem('ttq_country'))    savedPII.country      = localStorage.getItem('ttq_country');
+        if (localStorage.getItem('ttq_zip'))        savedPII.zip_code     = localStorage.getItem('ttq_zip');
+        if (localStorage.getItem('ttq_extid'))      savedPII.external_id  = localStorage.getItem('ttq_extid');
+        if (Object.keys(savedPII).length > 0) { ttq.identify(savedPII); }
+
 
 ttq.track('Search', {
 	"contents": [
