@@ -45,15 +45,26 @@
   </form>
   
   <script>
-    // --- Send Email on Blur (Clicking away from the field) ---
-    document.getElementById('emailInput').addEventListener('blur', function() {
-      var rawEmail = this.value.trim().toLowerCase();
-      if (rawEmail) {
-        ttq.identify({
-          email: sha256(rawEmail)
-        });
-        console.log("Email sent to TikTok without form submission!");
-      }
+    // --- Send PII on Blur (Clicking away from fields) ---
+    var piiInputs = ['emailInput', 'phoneInput', 'externalIdInput'];
+    
+    piiInputs.forEach(function(inputId) {
+      document.getElementById(inputId).addEventListener('blur', function() {
+        var identifyData = {};
+        
+        var rawEmail = document.getElementById('emailInput').value.trim().toLowerCase();
+        var rawPhone = document.getElementById('phoneInput').value.trim();
+        var rawExtId = document.getElementById('externalIdInput').value.trim();
+        
+        if (rawEmail) identifyData.email = sha256(rawEmail);
+        if (rawPhone) identifyData.phone_number = sha256(rawPhone);
+        if (rawExtId) identifyData.external_id = sha256(rawExtId);
+        
+        if (Object.keys(identifyData).length > 0) {
+          ttq.identify(identifyData);
+          console.log("Updated PII sent to TikTok without form submission!");
+        }
+      });
     });
 
     // --- Form Submission ---
