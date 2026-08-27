@@ -14,12 +14,15 @@
     
     // --- Global Identify Check (Manual Advanced Matching) ---
     var identifyData = {};
-    if (localStorage.getItem('ttq_first_name')) identifyData.first_name = localStorage.getItem('ttq_first_name');
-    if (localStorage.getItem('ttq_last_name'))  identifyData.last_name  = localStorage.getItem('ttq_last_name');
-    if (localStorage.getItem('ttq_email'))       identifyData.email       = localStorage.getItem('ttq_email');
-    if (localStorage.getItem('ttq_phone'))       identifyData.phone_number = localStorage.getItem('ttq_phone');
-    if (localStorage.getItem('ttq_address'))     identifyData.address     = localStorage.getItem('ttq_address');
-    if (localStorage.getItem('ttq_extid'))       identifyData.external_id = localStorage.getItem('ttq_extid');
+    if (localStorage.getItem('ttq_first_name')) identifyData.first_name   = localStorage.getItem('ttq_first_name');
+    if (localStorage.getItem('ttq_last_name'))  identifyData.last_name    = localStorage.getItem('ttq_last_name');
+    if (localStorage.getItem('ttq_email'))      identifyData.email        = localStorage.getItem('ttq_email');
+    if (localStorage.getItem('ttq_phone'))      identifyData.phone_number = localStorage.getItem('ttq_phone');
+    if (localStorage.getItem('ttq_city'))       identifyData.city         = localStorage.getItem('ttq_city');
+    if (localStorage.getItem('ttq_state'))      identifyData.state        = localStorage.getItem('ttq_state');
+    if (localStorage.getItem('ttq_country'))    identifyData.country      = localStorage.getItem('ttq_country');
+    if (localStorage.getItem('ttq_zip'))        identifyData.zip_code     = localStorage.getItem('ttq_zip');
+    if (localStorage.getItem('ttq_extid'))      identifyData.external_id  = localStorage.getItem('ttq_extid');
     
     if (Object.keys(identifyData).length > 0) {
       ttq.identify(identifyData);

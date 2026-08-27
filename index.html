@@ -14,12 +14,15 @@
     
     // --- Global Identify Check (Manual Advanced Matching) ---
     var identifyData = {};
-    if (localStorage.getItem('ttq_first_name')) identifyData.first_name = localStorage.getItem('ttq_first_name');
-    if (localStorage.getItem('ttq_last_name'))  identifyData.last_name  = localStorage.getItem('ttq_last_name');
-    if (localStorage.getItem('ttq_email'))       identifyData.email       = localStorage.getItem('ttq_email');
-    if (localStorage.getItem('ttq_phone'))       identifyData.phone_number = localStorage.getItem('ttq_phone');
-    if (localStorage.getItem('ttq_address'))     identifyData.address     = localStorage.getItem('ttq_address');
-    if (localStorage.getItem('ttq_extid'))       identifyData.external_id = localStorage.getItem('ttq_extid');
+    if (localStorage.getItem('ttq_first_name')) identifyData.first_name   = localStorage.getItem('ttq_first_name');
+    if (localStorage.getItem('ttq_last_name'))  identifyData.last_name    = localStorage.getItem('ttq_last_name');
+    if (localStorage.getItem('ttq_email'))      identifyData.email        = localStorage.getItem('ttq_email');
+    if (localStorage.getItem('ttq_phone'))      identifyData.phone_number = localStorage.getItem('ttq_phone');
+    if (localStorage.getItem('ttq_city'))       identifyData.city         = localStorage.getItem('ttq_city');
+    if (localStorage.getItem('ttq_state'))      identifyData.state        = localStorage.getItem('ttq_state');
+    if (localStorage.getItem('ttq_country'))    identifyData.country      = localStorage.getItem('ttq_country');
+    if (localStorage.getItem('ttq_zip'))        identifyData.zip_code     = localStorage.getItem('ttq_zip');
+    if (localStorage.getItem('ttq_extid'))      identifyData.external_id  = localStorage.getItem('ttq_extid');
     
     if (Object.keys(identifyData).length > 0) {
       ttq.identify(identifyData);
@@ -53,8 +56,14 @@
     <input type="email" id="emailInput" name="email"><br><br>
     <label for="phoneInput">Phone Number:</label><br>
     <input type="tel" id="phoneInput" name="phone_number"><br><br>
-    <label for="addressInput">Address:</label><br>
-    <input type="text" id="addressInput" name="address"><br><br>
+    <label for="cityInput">City:</label><br>
+    <input type="text" id="cityInput" name="city"><br><br>
+    <label for="stateInput">State:</label><br>
+    <input type="text" id="stateInput" name="state"><br><br>
+    <label for="countryInput">Country:</label><br>
+    <input type="text" id="countryInput" name="country"><br><br>
+    <label for="zipInput">Zip Code:</label><br>
+    <input type="text" id="zipInput" name="zip_code"><br><br>
     <label for="externalIdInput">Customer ID:</label><br>
     <input type="text" id="externalIdInput" name="external_id"><br><br>
     <button type="submit">Submit Data & Identify</button>
@@ -69,39 +78,27 @@
       var rawLastName  = document.getElementById('lastNameInput').value.trim().toLowerCase();
       var rawEmail     = document.getElementById('emailInput').value.trim().toLowerCase();
       var rawPhone     = document.getElementById('phoneInput').value.trim();
-      var rawAddress   = document.getElementById('addressInput').value.trim().toLowerCase();
+      var rawCity      = document.getElementById('cityInput').value.trim().toLowerCase();
+      var rawState     = document.getElementById('stateInput').value.trim().toLowerCase();
+      var rawCountry   = document.getElementById('countryInput').value.trim().toLowerCase();
+      var rawZip       = document.getElementById('zipInput').value.trim();
       var rawExtId     = document.getElementById('externalIdInput').value.trim();
       
-      if (rawFirstName) {
-        identifyData.first_name = sha256(rawFirstName);
-        localStorage.setItem('ttq_first_name', identifyData.first_name);
-      }
-      if (rawLastName) {
-        identifyData.last_name = sha256(rawLastName);
-        localStorage.setItem('ttq_last_name', identifyData.last_name);
-      }
-      if (rawEmail) {
-        identifyData.email = sha256(rawEmail);
-        localStorage.setItem('ttq_email', identifyData.email);
-      }
-      if (rawPhone) {
-        identifyData.phone_number = sha256(rawPhone);
-        localStorage.setItem('ttq_phone', identifyData.phone_number);
-      }
-      if (rawAddress) {
-        identifyData.address = sha256(rawAddress);
-        localStorage.setItem('ttq_address', identifyData.address);
-      }
-      if (rawExtId) {
-        identifyData.external_id = sha256(rawExtId);
-        localStorage.setItem('ttq_extid', identifyData.external_id);
-      }
+      if (rawFirstName) { identifyData.first_name   = sha256(rawFirstName); localStorage.setItem('ttq_first_name', identifyData.first_name); }
+      if (rawLastName)  { identifyData.last_name    = sha256(rawLastName);  localStorage.setItem('ttq_last_name',  identifyData.last_name); }
+      if (rawEmail)     { identifyData.email        = sha256(rawEmail);     localStorage.setItem('ttq_email',      identifyData.email); }
+      if (rawPhone)     { identifyData.phone_number = sha256(rawPhone);     localStorage.setItem('ttq_phone',      identifyData.phone_number); }
+      if (rawCity)      { identifyData.city         = sha256(rawCity);      localStorage.setItem('ttq_city',       identifyData.city); }
+      if (rawState)     { identifyData.state        = sha256(rawState);     localStorage.setItem('ttq_state',      identifyData.state); }
+      if (rawCountry)   { identifyData.country      = sha256(rawCountry);   localStorage.setItem('ttq_country',    identifyData.country); }
+      if (rawZip)       { identifyData.zip_code     = sha256(rawZip);       localStorage.setItem('ttq_zip',        identifyData.zip_code); }
+      if (rawExtId)     { identifyData.external_id  = sha256(rawExtId);     localStorage.setItem('ttq_extid',      identifyData.external_id); }
       
       return identifyData;
     }
 
     // --- Send PII on Blur (Clicking away from fields) ---
-    var piiInputs = ['firstNameInput', 'lastNameInput', 'emailInput', 'phoneInput', 'addressInput', 'externalIdInput'];
+    var piiInputs = ['firstNameInput', 'lastNameInput', 'emailInput', 'phoneInput', 'cityInput', 'stateInput', 'countryInput', 'zipInput', 'externalIdInput'];
     
     piiInputs.forEach(function(inputId) {
       document.getElementById(inputId).addEventListener('blur', function() {
