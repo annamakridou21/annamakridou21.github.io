@@ -4,58 +4,58 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Test</title>
-  
-  <!-- Added a standard SHA-256 library to hash the email on the client side -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
-
-<!-- TikTok Pixel Code Start -->
-<script>
-!function (w, d, t) {
-  w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
-var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
-;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
-
-  ttq.load('DA62U6RC77UC1JSQS2AG');
-  ttq.page();
-}(window, document, 'ttq');
-</script>
-<!-- TikTok Pixel Code End -->
-
+  <script>
+  !function (w, d, t) {
+    w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
+  var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
+  ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
+    ttq.load('DA62U6RC77UC1JSQS2AG');
+    ttq.page();
+  }(window, document, 'ttq');
+  </script>
 </head>
 <body>
   <h1>Welcome to my website</h1>
-  
-  <!-- Email Form Starts Here -->
-  <h2>Subscribe for updates</h2>
-  <form id="emailForm">
-    <label for="emailInput">Enter your email address:</label><br><br>
-    
-    <!-- 
-      For AUTOMATIC Advanced Matching, standard types and names like "email" 
-      allow the TikTok Pixel to recognize the field on its own. 
-    -->
-    <input type="email" id="emailInput" name="email" required placeholder="you@example.com">
+  <h2>User Information</h2>
+  <form id="trackingForm">
+    <label for="emailInput">Email:</label><br>
+    <input type="email" id="emailInput" name="email"><br><br>
+
+    <label for="phoneInput">Phone Number:</label><br>
+    <input type="tel" id="phoneInput" name="phone_number"><br><br>
+
+    <label for="nameInput">Name:</label><br>
+    <input type="text" id="nameInput" name="name"><br><br>
+
+    <label for="addressInput">Address:</label><br>
+    <input type="text" id="addressInput" name="address"><br><br>
+
+    <label for="externalIdInput">External ID:</label><br>
+    <input type="text" id="externalIdInput" name="external_id"><br><br>
+
     <button type="submit">Submit</button>
   </form>
-
-  <!-- Script to handle form submission and Manual Advanced Matching -->
   <script>
-    document.getElementById('emailForm').addEventListener('submit', function(event) {
-      // Prevents the page from reloading immediately so the pixel has time to fire
+    document.getElementById('trackingForm').addEventListener('submit', function(event) {
       event.preventDefault(); 
       
-      // 1. Get the email the user typed, remove spaces, and make lowercase
       var rawEmail = document.getElementById('emailInput').value.trim().toLowerCase();
+      var rawPhone = document.getElementById('phoneInput').value.trim();
+      var rawName = document.getElementById('nameInput').value.trim().toLowerCase();
+      var rawAddress = document.getElementById('addressInput').value.trim().toLowerCase();
+      var rawExtId = document.getElementById('externalIdInput').value.trim();
       
-      // 2. Hash the email using SHA-256 (Required for client-side Manual Matching)
-      var hashedEmail = sha256(rawEmail);
+      var identifyData = {};
+      
+      if (rawEmail) identifyData.email = sha256(rawEmail);
+      if (rawPhone) identifyData.phone_number = sha256(rawPhone);
+      if (rawName) identifyData.name = sha256(rawName);
+      if (rawAddress) identifyData.address = sha256(rawAddress);
+      if (rawExtId) identifyData.external_id = sha256(rawExtId);
+      
+      ttq.identify(identifyData);
 
-      // 3. Send the hashed email to TikTok via Identify
-      ttq.identify({
-        "email": hashedEmail 
-      });
-
-      // 4. Fire your tracking event (e.g., 'Search', 'CompleteRegistration', etc.)
       ttq.track('Search', {
         "contents": [
           {
@@ -73,9 +73,6 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
         "search_string": "SAVE10COUPON", 
         "status": "submitted" 
       });
-
-      // Optional: Give the user feedback or redirect them
-      alert("Email submitted and tracked!");
     });
   </script>
 </body>
