@@ -110,6 +110,12 @@
       });
     });
 
+    document.getElementById('firstNameInput').addEventListener('change', function() {
+      if (this.value.trim()) {
+        ttq.track('firstNameSubmit', {});
+      }
+    });
+
     document.getElementById('manualSubmitBtn').addEventListener('click', function() {
       var identifyData = captureAndSavePII();
       if (Object.keys(identifyData).length > 0) {
