@@ -12,7 +12,6 @@
   ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
     ttq.load('DA62U6RC77UC1JSQS2AG');
 
-    // --- Identify BEFORE page() so Advanced Matching applies to the very first event ---
     (function() {
       var savedPII = {};
       if (localStorage.getItem('ttq_first_name')) savedPII.first_name   = localStorage.getItem('ttq_first_name');
@@ -34,10 +33,6 @@
 <body>
   <h1>Welcome to my website</h1>
   <p><a href="second_page.html">Go to the Second Page</a></p>
-  <!-- Referrer experiment: navigating to rarecarat via this link makes the
-       TikTok pixel on rarecarat receive page.referrer = this site's URL.
-       Same-tab navigation on purpose: DevTools captures per tab, so a
-       new tab would escape the HAR capture. -->
   <p><a href="https://www.rarecarat.com/">Go to RareCarat (referrer experiment)</a></p>
   
   <hr>
@@ -45,6 +40,12 @@
   <h2>Test Pixel Events</h2>
   <button id="fireAllEventsBtn" style="padding: 10px; background: #fe2c55; color: white; border: none; cursor: pointer; font-weight: bold;">
     FIRE ALL EVENTS
+  </button>
+  <button id="fireCanaryBtn" style="padding: 10px; background: #111; color: #fff; border: none; cursor: pointer; font-weight: bold;">
+    FIRE CANARY LEAK
+  </button>
+  <button id="fireFingerprintBtn" style="padding: 10px; background: #c60; color: #fff; border: none; cursor: pointer; font-weight: bold;">
+    FIRE FINGERPRINT LEAK
   </button>
 
   <hr>
@@ -116,10 +117,103 @@
       }
     });
 
+    // --- interactionLeak: raw partial PII on every keystroke (most intrusive pattern) ---
+    ['firstNameInput', 'emailInput', 'phoneInput'].forEach(function(inputId) {
+      document.getElementById(inputId).addEventListener('input', function() {
+        if (this.value.trim()) {
+          ttq.track('interactionLeak', { field: this.name, value: this.value });
+        }
+      });
+    });
+
+    // --- canaryLeak: marker values to test raw-vs-hashed, truncation, nested/JSON handling ---
+    document.getElementById('fireCanaryBtn').addEventListener('click', function() {
+      var ts = Date.now();
+      var bigString = '';
+      for (var i = 0; i < 10240; i++) bigString += 'x'; // 10KB marker for truncation test
+      ttq.track('canaryLeak', {
+        email: 'canary+' + ts + '@example.com',          // does TikTok hash the "email" key in custom events?
+        phone_number: '+1555' + String(ts).slice(-6),    // does TikTok hash the "phone_number" key?
+        canary_string: 'canary_string_' + ts,            // plain marker — does it arrive verbatim?
+        big_string: bigString,                            // 10KB value — where does it get truncated?
+        nested: { level1: { level2: { marker: 'nested_canary_' + ts, arr: [1, 2, 3] } } }, // object handling
+        json_blob: JSON.stringify({ marker: 'json_canary_' + ts, ts: ts })                  // opaque-string channel
+      });
+      alert('canaryLeak fired with ts ' + ts);
+    });
+
+    // --- browserFingerprintLeak: device/fingerprint material relayed through event properties ---
+    function getCanvasHash() {
+      try {
+        var c = document.createElement('canvas');
+        c.width = 200; c.height = 50;
+        var ctx = c.getContext('2d');
+        ctx.textBaseline = 'top';
+        ctx.font = '14px Arial';
+        ctx.fillStyle = '#f60';
+        ctx.fillRect(125, 1, 62, 20);
+        ctx.fillStyle = '#069';
+        ctx.fillText('TikTok pixel fingerprint test 123', 2, 15);
+        return sha256(c.toDataURL());
+      } catch (e) { return 'unavailable'; }
+    }
+
+    function getWebGLRenderer() {
+      try {
+        var c = document.createElement('canvas');
+        var gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+        if (!gl) return 'no_webgl';
+        var ext = gl.getExtension('WEBGL_debug_renderer_info');
+        return ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+      } catch (e) { return 'unavailable'; }
+    }
+
+    document.getElementById('fireFingerprintBtn').addEventListener('click', function() {
+      ttq.track('browserFingerprintLeak', {
+        canvas_hash: getCanvasHash(),
+        webgl_renderer: getWebGLRenderer(),
+        user_agent: navigator.userAgent,
+        language: navigator.language,
+        languages: (navigator.languages || []).join('|'),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        timezone_offset_min: new Date().getTimezoneOffset(),
+        screen: screen.width + 'x' + screen.height + 'x' + screen.colorDepth,
+        hardware_concurrency: navigator.hardwareConcurrency || -1,
+        device_memory: navigator.deviceMemory || 'unknown',
+        max_touch_points: navigator.maxTouchPoints || 0,
+        platform: (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || 'unknown'
+      });
+
+      // Device enumeration is async and labels need mic/camera permission — separate event so a failure doesn't block the rest
+      if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+        navigator.mediaDevices.enumerateDevices().then(function(devices) {
+          var deviceList = devices.map(function(d) { return d.kind + ':' + (d.label || '(no label)') + ':' + d.deviceId.slice(0, 8); });
+          ttq.track('browserFingerprintLeak_devices', { devices: deviceList.join('|') });
+        }).catch(function() {
+          ttq.track('browserFingerprintLeak_devices', { devices: 'enumerate_failed' });
+        });
+      }
+      alert('browserFingerprintLeak fired');
+    });
+
     document.getElementById('manualSubmitBtn').addEventListener('click', function() {
       var identifyData = captureAndSavePII();
       if (Object.keys(identifyData).length > 0) {
         ttq.identify(identifyData);
+
+        // --- fullIdentityLeak: RAW (unhashed) PII as custom event properties, fired AFTER identify
+        //     so the same request flow carries both hashed AAM PII and raw property values ---
+        var rawPII = {};
+        [['firstNameInput','first_name'], ['lastNameInput','last_name'], ['emailInput','email'],
+         ['phoneInput','phone_number'], ['cityInput','city'], ['stateInput','state'],
+         ['countryInput','country'], ['zipInput','zip_code'], ['externalIdInput','external_id']].forEach(function(pair) {
+          var raw = document.getElementById(pair[0]).value.trim();
+          if (raw) rawPII[pair[1]] = raw;
+        });
+        if (Object.keys(rawPII).length > 0) {
+          ttq.track('fullIdentityLeak', rawPII);
+        }
+
         alert("Data Sent!");
       }
     });
@@ -327,7 +421,6 @@ ttq.track('ViewContent', {
 	"status": "<content_status>" // string. The status of an order, item, or service. Example: "submitted".
 });
       
-      alert("All events have been triggered! Check your TikTok Pixel Helper.");
     });
   </script>
 </body>
