@@ -35,8 +35,10 @@
   <h1>Welcome to my website</h1>
   <p><a href="second_page.html">Go to the Second Page</a></p>
   <!-- Referrer experiment: navigating to rarecarat via this link makes the
-       TikTok pixel on rarecarat receive page.referrer = this site's URL. -->
-  <p><a href="https://www.rarecarat.com/" target="_blank" rel="noopener">Go to RareCarat (referrer experiment)</a></p>
+       TikTok pixel on rarecarat receive page.referrer = this site's URL.
+       Same-tab navigation on purpose: DevTools captures per tab, so a
+       new tab would escape the HAR capture. -->
+  <p><a href="https://www.rarecarat.com/">Go to RareCarat (referrer experiment)</a></p>
   
   <hr>
 
