@@ -11,12 +11,8 @@
   var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
   ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
     ttq.load('DA62U6RC77UC1JSQS2AG');
-    ttq.page();
-  }(window, document, 'ttq');
-  </script>
-  <script>
-    // --- Global Identify on Page Load (Manual Advanced Matching via localStorage) ---
-    // Runs in a separate script block, safely outside the pixel IIFE
+
+    // --- Identify BEFORE page() so Advanced Matching applies to the very first event ---
     (function() {
       var savedPII = {};
       if (localStorage.getItem('ttq_first_name')) savedPII.first_name   = localStorage.getItem('ttq_first_name');
@@ -30,6 +26,9 @@
       if (localStorage.getItem('ttq_extid'))      savedPII.external_id  = localStorage.getItem('ttq_extid');
       if (Object.keys(savedPII).length > 0) { ttq.identify(savedPII); }
     }());
+
+    ttq.page();
+  }(window, document, 'ttq');
   </script>
 </head>
 <body>
@@ -39,7 +38,6 @@
   <hr>
 
   <h2>Test Pixel Events</h2>
-  <p>Click the button below to fire all standard TikTok Pixel events at once.</p>
   <button id="fireAllEventsBtn" style="padding: 10px; background: #fe2c55; color: white; border: none; cursor: pointer; font-weight: bold;">
     FIRE ALL EVENTS
   </button>
@@ -47,12 +45,6 @@
   <hr>
 
   <h2>User Information</h2>
-  <!--
-    IMPORTANT: Inputs are intentionally placed OUTSIDE a <form> tag.
-    TikTok's Auto Advanced Matching has in_form:false, meaning it skips
-    scanning inputs inside <form> elements. Placing inputs outside the form
-    allows Auto AM to detect email and phone automatically.
-  -->
   <div id="trackingForm">
     <label for="firstNameInput">First Name:</label><br>
     <input type="text" id="firstNameInput" name="first_name" autocomplete="given-name"><br><br>
@@ -69,14 +61,13 @@
     <label for="countryInput">Country:</label><br>
     <input type="text" id="countryInput" name="country" autocomplete="country-name"><br><br>
     <label for="zipInput">Zip Code:</label><br>
-    <input type="text" id="zipInput" name="zip_code" autocomplete="postal-code"><br><br>
+    <input type="text" id="zipInput" name="postal_code" autocomplete="postal-code"><br><br>
     <label for="externalIdInput">Customer ID:</label><br>
     <input type="text" id="externalIdInput" name="external_id"><br><br>
     <button type="button" id="manualSubmitBtn">Submit Data &amp; Identify</button>
   </div>
   
   <script>
-    // --- Helper to hash and save PII ---
     function captureAndSavePII() {
       var identifyData = {};
       
@@ -103,7 +94,6 @@
       return identifyData;
     }
 
-    // --- Send PII on Blur (Clicking away from fields) ---
     var piiInputs = ['firstNameInput', 'lastNameInput', 'emailInput', 'phoneInput', 'cityInput', 'stateInput', 'countryInput', 'zipInput', 'externalIdInput'];
     
     piiInputs.forEach(function(inputId) {
@@ -111,26 +101,19 @@
         var identifyData = captureAndSavePII();
         if (Object.keys(identifyData).length > 0) {
           ttq.identify(identifyData);
-          console.log("Updated PII saved and sent to TikTok on blur!");
         }
       });
     });
 
-    // --- Manual Submit Button ---
     document.getElementById('manualSubmitBtn').addEventListener('click', function() {
       var identifyData = captureAndSavePII();
       if (Object.keys(identifyData).length > 0) {
         ttq.identify(identifyData);
-        alert("Manual Identify Data Saved and Sent!");
-      } else {
-        alert("No PII data to send.");
+        alert("Data Sent!");
       }
     });
 
-    // --- Fire All Events Button ---
     document.getElementById('fireAllEventsBtn').addEventListener('click', function() {
-
-        // add this before event code to all pages where PII data postback is expected and appropriate
         var savedPII = {};
         if (localStorage.getItem('ttq_first_name')) savedPII.first_name   = localStorage.getItem('ttq_first_name');
         if (localStorage.getItem('ttq_last_name'))  savedPII.last_name    = localStorage.getItem('ttq_last_name');
@@ -143,198 +126,7 @@
         if (localStorage.getItem('ttq_extid'))      savedPII.external_id  = localStorage.getItem('ttq_extid');
         if (Object.keys(savedPII).length > 0) { ttq.identify(savedPII); }
 
-
-ttq.track('Search', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>", // string. ID of the product. Example: "1077218".
-			"content_type": "<content_type>", // string. Either product or product_group.
-			"content_name": "<content_name>", // string. The name of the page or product. Example: "shirt".
-			"content_category": "<content_category>", // string. The category of the page or product. Example: "apparel".
-			"price": "<content_price>", // number. The price of a single item. Example: 25.
-			"num_items": "<num_items>", // number. The number of items. Example: 4.
-			"brand": "<brand>" // string. The brand name of the page or product. Example: "Nike".
-		}
-	],
-	"value": "<content_value>", // number. Value of the order or items sold. Example: 100.
-	"currency": "<content_currency>", // string. The 4217 currency code. Example: "USD".
-	"search_string": "<search_keywords>", // string. The word or phrase used to search. Example: "SAVE10COUPON".
-	"description": "<content_description>", // string. Non-hashed public IP address of the browser.
-	"status": "<content_status>" // string. The status of an order, item, or service. Example: "submitted".
-});
-
-ttq.track('AddPaymentInfo', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>", // string. ID of the product. Example: "1077218".
-			"content_type": "<content_type>", // string. Either product or product_group.
-			"content_name": "<content_name>", // string. The name of the page or product. Example: "shirt".
-			"content_category": "<content_category>", // string. The category of the page or product. Example: "apparel".
-			"price": "<content_price>", // number. The price of a single item. Example: 25.
-			"num_items": "<num_items>", // number. The number of items. Example: 4.
-			"brand": "<brand>" // string. The brand name of the page or product. Example: "Nike".
-		}
-	],
-	"value": "<content_value>", // number. Value of the order or items sold. Example: 100.
-	"currency": "<content_currency>", // string. The 4217 currency code. Example: "USD".
-	"search_string": "<search_keywords>", // string. The word or phrase used to search. Example: "SAVE10COUPON".
-	"description": "<content_description>", // string. Non-hashed public IP address of the browser.
-	"status": "<content_status>" // string. The status of an order, item, or service. Example: "submitted".
-});
-
 ttq.track('AddToCart', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>", // string. ID of the product. Example: "1077218".
-			"content_type": "<content_type>", // string. Either product or product_group.
-			"content_name": "<content_name>", // string. The name of the page or product. Example: "shirt".
-			"content_category": "<content_category>", // string. The category of the page or product. Example: "apparel".
-			"price": "<content_price>", // number. The price of a single item. Example: 25.
-			"num_items": "<num_items>", // number. The number of items. Example: 4.
-			"brand": "<brand>" // string. The brand name of the page or product. Example: "Nike".
-		}
-	],
-	"value": "<content_value>", // number. Value of the order or items sold. Example: 100.
-	"currency": "<content_currency>", // string. The 4217 currency code. Example: "USD".
-	"search_string": "<search_keywords>", // string. The word or phrase used to search. Example: "SAVE10COUPON".
-	"description": "<content_description>", // string. Non-hashed public IP address of the browser.
-	"status": "<content_status>" // string. The status of an order, item, or service. Example: "submitted".
-});
-
-ttq.track('AddToWishlist', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>", // string. ID of the product. Example: "1077218".
-			"content_type": "<content_type>", // string. Either product or product_group.
-			"content_name": "<content_name>", // string. The name of the page or product. Example: "shirt".
-			"content_category": "<content_category>", // string. The category of the page or product. Example: "apparel".
-			"price": "<content_price>", // number. The price of a single item. Example: 25.
-			"num_items": "<num_items>", // number. The number of items. Example: 4.
-			"brand": "<brand>" // string. The brand name of the page or product. Example: "Nike".
-		}
-	],
-	"value": "<content_value>", // number. Value of the order or items sold. Example: 100.
-	"currency": "<content_currency>", // string. The 4217 currency code. Example: "USD".
-	"search_string": "<search_keywords>", // string. The word or phrase used to search. Example: "SAVE10COUPON".
-	"description": "<content_description>", // string. Non-hashed public IP address of the browser.
-	"status": "<content_status>" // string. The status of an order, item, or service. Example: "submitted".
-});
-
-ttq.track('ApplicationApproval', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>", // string. ID of the product. Example: "1077218".
-			"content_type": "<content_type>", // string. Either product or product_group.
-			"content_name": "<content_name>", // string. The name of the page or product. Example: "shirt".
-			"content_category": "<content_category>", // string. The category of the page or product. Example: "apparel".
-			"price": "<content_price>", // number. The price of a single item. Example: 25.
-			"num_items": "<num_items>", // number. The number of items. Example: 4.
-			"brand": "<brand>" // string. The brand name of the page or product. Example: "Nike".
-		}
-	],
-	"value": "<content_value>", // number. Value of the order or items sold. Example: 100.
-	"currency": "<content_currency>", // string. The 4217 currency code. Example: "USD".
-	"search_string": "<search_keywords>", // string. The word or phrase used to search. Example: "SAVE10COUPON".
-	"description": "<content_description>", // string. Non-hashed public IP address of the browser.
-	"status": "<content_status>" // string. The status of an order, item, or service. Example: "submitted".
-});
-
-ttq.track('ClickButton', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>", // string. ID of the product. Example: "1077218".
-			"content_type": "<content_type>", // string. Either product or product_group.
-			"content_name": "<content_name>", // string. The name of the page or product. Example: "shirt".
-			"content_category": "<content_category>", // string. The category of the page or product. Example: "apparel".
-			"price": "<content_price>", // number. The price of a single item. Example: 25.
-			"num_items": "<num_items>", // number. The number of items. Example: 4.
-			"brand": "<brand>" // string. The brand name of the page or product. Example: "Nike".
-		}
-	],
-	"value": "<content_value>", // number. Value of the order or items sold. Example: 100.
-	"currency": "<content_currency>", // string. The 4217 currency code. Example: "USD".
-	"search_string": "<search_keywords>", // string. The word or phrase used to search. Example: "SAVE10COUPON".
-	"description": "<content_description>", // string. Non-hashed public IP address of the browser.
-	"status": "<content_status>" // string. The status of an order, item, or service. Example: "submitted".
-});
-
-ttq.track('CompleteRegistration', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>", // string. ID of the product. Example: "1077218".
-			"content_type": "<content_type>", // string. Either product or product_group.
-			"content_name": "<content_name>", // string. The name of the page or product. Example: "shirt".
-			"content_category": "<content_category>", // string. The category of the page or product. Example: "apparel".
-			"price": "<content_price>", // number. The price of a single item. Example: 25.
-			"num_items": "<num_items>", // number. The number of items. Example: 4.
-			"brand": "<brand>" // string. The brand name of the page or product. Example: "Nike".
-		}
-	],
-	"value": "<content_value>", // number. Value of the order or items sold. Example: 100.
-	"currency": "<content_currency>", // string. The 4217 currency code. Example: "USD".
-	"search_string": "<search_keywords>", // string. The word or phrase used to search. Example: "SAVE10COUPON".
-	"description": "<content_description>", // string. Non-hashed public IP address of the browser.
-	"status": "<content_status>" // string. The status of an order, item, or service. Example: "submitted".
-});
-
-ttq.track('Contact', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>", // string. ID of the product. Example: "1077218".
-			"content_type": "<content_type>", // string. Either product or product_group.
-			"content_name": "<content_name>", // string. The name of the page or product. Example: "shirt".
-			"content_category": "<content_category>", // string. The category of the page or product. Example: "apparel".
-			"price": "<content_price>", // number. The price of a single item. Example: 25.
-			"num_items": "<num_items>", // number. The number of items. Example: 4.
-			"brand": "<brand>" // string. The brand name of the page or product. Example: "Nike".
-		}
-	],
-	"value": "<content_value>", // number. Value of the order or items sold. Example: 100.
-	"currency": "<content_currency>", // string. The 4217 currency code. Example: "USD".
-	"search_string": "<search_keywords>", // string. The word or phrase used to search. Example: "SAVE10COUPON".
-	"description": "<content_description>", // string. Non-hashed public IP address of the browser.
-	"status": "<content_status>" // string. The status of an order, item, or service. Example: "submitted".
-});
-
-ttq.track('CustomizeProduct', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>", // string. ID of the product. Example: "1077218".
-			"content_type": "<content_type>", // string. Either product or product_group.
-			"content_name": "<content_name>", // string. The name of the page or product. Example: "shirt".
-			"content_category": "<content_category>", // string. The category of the page or product. Example: "apparel".
-			"price": "<content_price>", // number. The price of a single item. Example: 25.
-			"num_items": "<num_items>", // number. The number of items. Example: 4.
-			"brand": "<brand>" // string. The brand name of the page or product. Example: "Nike".
-		}
-	],
-	"value": "<content_value>", // number. Value of the order or items sold. Example: 100.
-	"currency": "<content_currency>", // string. The 4217 currency code. Example: "USD".
-	"search_string": "<search_keywords>", // string. The word or phrase used to search. Example: "SAVE10COUPON".
-	"description": "<content_description>", // string. Non-hashed public IP address of the browser.
-	"status": "<content_status>" // string. The status of an order, item, or service. Example: "submitted".
-});
-
-ttq.track('Download', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>", // string. ID of the product. Example: "1077218".
-			"content_type": "<content_type>", // string. Either product or product_group.
-			"content_name": "<content_name>", // string. The name of the page or product. Example: "shirt".
-			"content_category": "<content_category>", // string. The category of the page or product. Example: "apparel".
-			"price": "<content_price>", // number. The price of a single item. Example: 25.
-			"num_items": "<num_items>", // number. The number of items. Example: 4.
-			"brand": "<brand>" // string. The brand name of the page or product. Example: "Nike".
-		}
-	],
-	"value": "<content_value>", // number. Value of the order or items sold. Example: 100.
-	"currency": "<content_currency>", // string. The 4217 currency code. Example: "USD".
-	"search_string": "<search_keywords>", // string. The word or phrase used to search. Example: "SAVE10COUPON".
-	"description": "<content_description>", // string. Non-hashed public IP address of the browser.
-	"status": "<content_status>" // string. The status of an order, item, or service. Example: "submitted".
-});
-
-ttq.track('FindLocation', {
 	"contents": [
 		{
 			"content_id": "<content_identifier>", // string. ID of the product. Example: "1077218".
