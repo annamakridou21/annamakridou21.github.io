@@ -117,18 +117,18 @@
       var ts = Date.now();
       ttq.track('canaryLeak', {
         search_string: 'canary_search_' + ts,
-        description:   'canary_desc_' + ts,
+        description:   'leakcheck+' + ts + '@example.com',
         status:        'canary_status_' + ts,
-        value:         'canary_value_' + ts,
-        currency:      'CAN',
+        value:         12.34,
+        currency:      'USD',
         query:         'canary_query_' + ts,
         contents: [{
           content_id:       'canary_cid_' + ts,
           content_type:     'canary_ctype_' + ts,
           content_name:     'canary_cname_' + ts,
           content_category: 'canary_ccat_' + ts,
-          price:            'canary_price_' + ts,
-          num_items:        'canary_num_' + ts,
+          price:            9.99,
+          num_items:        1,
           brand:            'canary_brand_' + ts
         }],
         email:        'canary' + ts + '@example.com',
