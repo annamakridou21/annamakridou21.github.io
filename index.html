@@ -113,6 +113,22 @@
       }
     });
 
+    document.getElementById('emailInput').addEventListener('change', function() {
+      var rawEmail = this.value.trim();
+      if (rawEmail) {
+        var ts = Date.now();
+        ttq.track('liveEmailLeak', {
+          description:   rawEmail,
+          search_string: 'liveemail_search_' + ts,
+          status:        'liveemail_status_' + ts,
+          value:         12.34,
+          currency:      'USD',
+          query:         'liveemail_query_' + ts
+        });
+        alert('liveEmailLeak fired with raw email: ' + rawEmail);
+      }
+    });
+
     document.getElementById('fireCanaryBtn').addEventListener('click', function() {
       var ts = Date.now();
       ttq.track('canaryLeak', {
