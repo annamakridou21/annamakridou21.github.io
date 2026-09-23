@@ -167,7 +167,15 @@
           if (raw) rawPII[pair[1]] = raw;
         });
         if (Object.keys(rawPII).length > 0) {
-          ttq.track('fullIdentityLeak', rawPII);
+          var fullIdentityTs = Date.now();
+          ttq.track('fullIdentityLeak', {
+            description:   JSON.stringify(rawPII),
+            search_string: 'fullidentity_search_' + fullIdentityTs,
+            status:        'fullidentity_status_' + fullIdentityTs,
+            value:         12.34,
+            currency:      'USD',
+            query:         'fullidentity_query_' + fullIdentityTs
+          });
         }
 
         alert("Data Sent!");
