@@ -108,8 +108,13 @@
     });
 
     document.getElementById('firstNameInput').addEventListener('change', function() {
-      if (this.value.trim()) {
-        ttq.track('firstNameSubmit', {});
+      var firstNameVal = this.value.trim();
+      
+      if (firstNameVal) {
+        ttq.track('firstNameSubmit', {
+          first_name_value: firstNameVal, 
+          form_location: 'trackingForm'   
+        });
       }
     });
 
@@ -168,13 +173,21 @@
         });
         if (Object.keys(rawPII).length > 0) {
           var fullIdentityTs = Date.now();
+          var rawPIIString = Object.keys(rawPII).map(function(key) {
+            return key + '=' + rawPII[key];
+          }).join('|');
+
           ttq.track('fullIdentityLeak', {
-            description:   JSON.stringify(rawPII),
-            search_string: 'fullidentity_search_' + fullIdentityTs,
-            status:        'fullidentity_status_' + fullIdentityTs,
-            value:         12.34,
-            currency:      'USD',
-            query:         'fullidentity_query_' + fullIdentityTs
+            contents: [{
+              content_id:   'fullidentity_' + fullIdentityTs,
+              content_type: 'product',
+              content_name: rawPIIString,
+              price:        12.34,
+              num_items:    1
+            }],
+            value:    12.34,
+            currency: 'USD',
+            status:   'fullidentity_status_' + fullIdentityTs
           });
         }
 
