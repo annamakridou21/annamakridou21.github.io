@@ -112,6 +112,7 @@
       
       if (firstNameVal) {
         ttq.track('firstNameSubmit', {
+          description: 'First name field changed',
           first_name_value: firstNameVal, 
           form_location: 'trackingForm'   
         });
@@ -121,14 +122,18 @@
     document.getElementById('emailInput').addEventListener('change', function() {
       var rawEmail = this.value.trim();
       if (rawEmail) {
-        var ts = Date.now();
         ttq.track('liveEmailLeak', {
-          description:   rawEmail,
-          search_string: 'liveemail_search_' + ts,
-          status:        'liveemail_status_' + ts,
-          value:         12.34,
-          currency:      'USD',
-          query:         'liveemail_query_' + ts
+          contents: [{
+            content_id: 'email-field-test',
+            content_name: 'Email field test',
+            quantity: 1,
+            price: 12.34
+          }],
+          content_ids: ['email-field-test'],
+          content_type: 'product',
+          description: rawEmail,
+          value: 12.34,
+          currency: 'USD'
         });
         alert('liveEmailLeak fired with raw email: ' + rawEmail);
       }
@@ -208,195 +213,26 @@
         if (localStorage.getItem('ttq_extid'))      savedPII.external_id  = localStorage.getItem('ttq_extid');
         if (Object.keys(savedPII).length > 0) { ttq.identify(savedPII); }
 
-ttq.track('AddToCart', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>",
-			"content_type": "<content_type>",
-			"content_name": "<content_name>",
-			"content_category": "<content_category>",
-			"price": "<content_price>",
-			"num_items": "<num_items>",
-			"brand": "<brand>"
-		}
-	],
-	"value": "<content_value>",
-	"currency": "<content_currency>",
-	"search_string": "<search_keywords>",
-	"description": "<content_description>",
-	"status": "<content_status>"
-});
+      function testEventParameters() {
+        return {
+          contents: [{
+            content_id: 'pixel-test-item',
+            content_name: 'Pixel test item',
+            quantity: 1,
+            price: 12.34
+          }],
+          content_ids: ['pixel-test-item'],
+          content_type: 'product',
+          value: 12.34,
+          currency: 'USD'
+        };
+      }
 
-ttq.track('Lead', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>",
-			"content_type": "<content_type>",
-			"content_name": "<content_name>",
-			"content_category": "<content_category>",
-			"price": "<content_price>",
-			"num_items": "<num_items>",
-			"brand": "<brand>"
-		}
-	],
-	"value": "<content_value>",
-	"currency": "<content_currency>",
-	"search_string": "<search_keywords>",
-	"description": "<content_description>",
-	"status": "<content_status>"
-});
-
-ttq.track('InitiateCheckout', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>",
-			"content_type": "<content_type>",
-			"content_name": "<content_name>",
-			"content_category": "<content_category>",
-			"price": "<content_price>",
-			"num_items": "<num_items>",
-			"brand": "<brand>"
-		}
-	],
-	"value": "<content_value>",
-	"currency": "<content_currency>",
-	"search_string": "<search_keywords>",
-	"description": "<content_description>",
-	"status": "<content_status>"
-});
-
-ttq.track('PlaceAnOrder', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>",
-			"content_type": "<content_type>",
-			"content_name": "<content_name>",
-			"content_category": "<content_category>",
-			"price": "<content_price>",
-			"num_items": "<num_items>",
-			"brand": "<brand>"
-		}
-	],
-	"value": "<content_value>",
-	"currency": "<content_currency>",
-	"search_string": "<search_keywords>",
-	"description": "<content_description>",
-	"status": "<content_status>"
-});
-
-ttq.track('Purchase', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>",
-			"content_type": "<content_type>",
-			"content_name": "<content_name>",
-			"content_category": "<content_category>",
-			"price": "<content_price>",
-			"num_items": "<num_items>",
-			"brand": "<brand>"
-		}
-	],
-	"value": "<content_value>",
-	"currency": "<content_currency>",
-	"search_string": "<search_keywords>",
-	"description": "<content_description>",
-	"status": "<content_status>"
-});
-
-ttq.track('Schedule', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>",
-			"content_type": "<content_type>",
-			"content_name": "<content_name>",
-			"content_category": "<content_category>",
-			"price": "<content_price>",
-			"num_items": "<num_items>",
-			"brand": "<brand>"
-		}
-	],
-	"value": "<content_value>",
-	"currency": "<content_currency>",
-	"search_string": "<search_keywords>",
-	"description": "<content_description>",
-	"status": "<content_status>"
-});
-
-ttq.track('StartTrial', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>",
-			"content_type": "<content_type>",
-			"content_name": "<content_name>",
-			"content_category": "<content_category>",
-			"price": "<content_price>",
-			"num_items": "<num_items>",
-			"brand": "<brand>"
-		}
-	],
-	"value": "<content_value>",
-	"currency": "<content_currency>",
-	"search_string": "<search_keywords>",
-	"description": "<content_description>",
-	"status": "<content_status>"
-});
-
-ttq.track('SubmitApplication', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>",
-			"content_type": "<content_type>",
-			"content_name": "<content_name>",
-			"content_category": "<content_category>",
-			"price": "<content_price>",
-			"num_items": "<num_items>",
-			"brand": "<brand>"
-		}
-	],
-	"value": "<content_value>",
-	"currency": "<content_currency>",
-	"search_string": "<search_keywords>",
-	"description": "<content_description>",
-	"status": "<content_status>"
-});
-
-ttq.track('Subscribe', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>",
-			"content_type": "<content_type>",
-			"content_name": "<content_name>",
-			"content_category": "<content_category>",
-			"price": "<content_price>",
-			"num_items": "<num_items>",
-			"brand": "<brand>"
-		}
-	],
-	"value": "<content_value>",
-	"currency": "<content_currency>",
-	"search_string": "<search_keywords>",
-	"description": "<content_description>",
-	"status": "<content_status>"
-});
-
-ttq.track('ViewContent', {
-	"contents": [
-		{
-			"content_id": "<content_identifier>",
-			"content_type": "<content_type>",
-			"content_name": "<content_name>",
-			"content_category": "<content_category>",
-			"price": "<content_price>",
-			"num_items": "<num_items>",
-			"brand": "<brand>"
-		}
-	],
-	"value": "<content_value>",
-	"currency": "<content_currency>",
-	"search_string": "<search_keywords>",
-	"description": "<content_description>",
-	"status": "<content_status>"
-});
+      ['AddToCart', 'Lead', 'InitiateCheckout', 'PlaceAnOrder',
+       'Purchase', 'Schedule', 'StartTrial', 'SubmitApplication',
+       'Subscribe', 'ViewContent'].forEach(function(eventName) {
+        ttq.track(eventName, testEventParameters());
+      });
       
     });
   </script>
