@@ -17,6 +17,7 @@
   <title>Test</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
   <script src="tracking.js" defer></script>
+  <script src="openai-matching.js" defer></script>
   <script src="index.js" defer></script>
 </head>
 <body>
@@ -47,16 +48,16 @@
     <input type="text" id="lastNameInput" name="last_name" autocomplete="family-name"><br><br>
     <label for="emailInput">Email:</label><br>
     <input type="email" id="emailInput" name="email" autocomplete="email"><br><br>
-    <label for="phoneInput">Phone Number:</label><br>
-    <input type="tel" id="phoneInput" name="phone_number" autocomplete="tel"><br><br>
+    <label for="phoneInput">Phone Number (with country calling code):</label><br>
+    <input type="tel" id="phoneInput" name="phone_number" autocomplete="tel" placeholder="+1 (415) 555-2671"><br><br>
     <label for="cityInput">City:</label><br>
-    <input type="text" id="cityInput" name="city" autocomplete="address-level2"><br><br>
+    <input type="text" id="cityInput" name="city" autocomplete="address-level2" maxlength="128"><br><br>
     <label for="stateInput">State:</label><br>
-    <input type="text" id="stateInput" name="state" autocomplete="address-level1"><br><br>
-    <label for="countryInput">Country:</label><br>
-    <input type="text" id="countryInput" name="country" autocomplete="country-name"><br><br>
+    <input type="text" id="stateInput" name="state" autocomplete="address-level1" maxlength="128"><br><br>
+    <label for="countryInput">Country (2-letter code):</label><br>
+    <input type="text" id="countryInput" name="country" autocomplete="country" placeholder="US" maxlength="2"><br><br>
     <label for="zipInput">Zip Code:</label><br>
-    <input type="text" id="zipInput" name="postal_code" autocomplete="postal-code"><br><br>
+    <input type="text" id="zipInput" name="postal_code" autocomplete="postal-code" maxlength="32"><br><br>
     <label for="externalIdInput">Customer ID:</label><br>
     <input type="text" id="externalIdInput" name="external_id"><br><br>
     <button type="button" id="manualSubmitBtn">Submit Data &amp; Identify</button>

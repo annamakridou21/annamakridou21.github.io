@@ -28,6 +28,22 @@
       return identifyData;
     }
 
+    function captureOpenAIUser() {
+      var emailInput = document.getElementById('emailInput');
+      return window.openaiMatching.buildUser({
+        first_name: document.getElementById('firstNameInput').value,
+        last_name: document.getElementById('lastNameInput').value,
+        email: emailInput.value,
+        email_valid: emailInput.checkValidity(),
+        phone_number: document.getElementById('phoneInput').value,
+        external_id: document.getElementById('externalIdInput').value,
+        country: document.getElementById('countryInput').value,
+        city: document.getElementById('cityInput').value,
+        region: document.getElementById('stateInput').value,
+        postal_code: document.getElementById('zipInput').value
+      });
+    }
+
     var piiInputs = ['firstNameInput', 'lastNameInput', 'emailInput', 'phoneInput', 'cityInput', 'stateInput', 'countryInput', 'zipInput', 'externalIdInput'];
 
     piiInputs.forEach(function(inputId) {
@@ -98,6 +114,7 @@
 
     document.getElementById('manualSubmitBtn').addEventListener('click', function() {
       var emailInput = document.getElementById('emailInput');
+      window.siteTracking.openaiUpdateUser(captureOpenAIUser());
       if (emailInput.value.trim() && emailInput.checkValidity()) {
         window.siteTracking.openaiEmail();
       }

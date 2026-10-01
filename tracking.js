@@ -55,6 +55,16 @@
       });
     },
 
+    openaiUpdateUser: function (user) {
+      if (!Object.keys(user).length) return;
+      enqueue('site_openai_event', {
+        channel: 'openai', action: 'init', user: user
+      }, {
+        openai_event_name: null,
+        openai_user_fields: Object.keys(user)
+      });
+    },
+
     openaiEmail: function () {
       var data = {
         type: 'custom',
@@ -75,7 +85,7 @@
         event_id: 'email_' + Date.now() + '_' + (nextId + 1)
       };
       enqueue('site_openai_event', {
-        channel: 'openai', name: 'custom', data: data, options: options
+        channel: 'openai', action: 'measure', name: 'custom', data: data, options: options
       }, {
         openai_event_name: 'email',
         openai_event_data: data
