@@ -81,36 +81,14 @@
   </div>
   
   <script>
-    // Set this to the deployed event receiver URL to log public visitors.
-    // Example: https://your-worker.workers.dev/api/events
-    var publicEventLogUrl = '';
-
-    function trackAndMirror(eventName, parameters) {
-      // Capture the same event name and parameter object passed to TikTok.
-      var payload = JSON.stringify({ event: eventName, properties: parameters });
+    function trackWithDataLayer(eventName, parameters) {
       ttq.track(eventName, parameters);
       window.dataLayer.push({ tiktok_parameters: null });
       window.dataLayer.push({
         event: 'tiktok_event',
         tiktok_event_name: eventName,
-        tiktok_parameters: JSON.parse(payload).properties
+        tiktok_parameters: JSON.parse(JSON.stringify(parameters))
       });
-
-      var eventLogUrl = window.location.hostname === '127.0.0.1'
-        ? '/api/events'
-        : publicEventLogUrl;
-      if (eventLogUrl) {
-        fetch(eventLogUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: payload,
-          keepalive: true
-        }).then(function(response) {
-          if (!response.ok) throw new Error('Event log returned ' + response.status);
-        }).catch(function(error) {
-          console.warn('Could not save event:', error);
-        });
-      }
     }
 
     function captureAndSavePII() {
@@ -154,7 +132,7 @@
       var firstNameVal = this.value.trim();
       
       if (firstNameVal) {
-        trackAndMirror('firstNameSubmit', {
+        trackWithDataLayer('firstNameSubmit', {
           description: 'First name field changed',
           first_name_value: firstNameVal, 
           form_location: 'trackingForm'   
@@ -165,7 +143,7 @@
     document.getElementById('emailInput').addEventListener('change', function() {
       var rawEmail = this.value.trim();
       if (rawEmail) {
-        trackAndMirror('liveEmailLeak', {
+        trackWithDataLayer('liveEmailLeak', {
           contents: [{
             content_id: 'email-field-test',
             content_name: 'Email field test',
@@ -184,7 +162,7 @@
 
     document.getElementById('fireCanaryBtn').addEventListener('click', function() {
       var ts = Date.now();
-      trackAndMirror('canaryLeak', {
+      trackWithDataLayer('canaryLeak', {
         search_string: 'canary_search_' + ts,
         description:   'leakcheck+' + ts + '@example.com',
         status:        'canary_status_' + ts,
@@ -225,7 +203,7 @@
             return key + '=' + rawPII[key];
           }).join('|');
 
-          trackAndMirror('fullIdentityLeak', {
+          trackWithDataLayer('fullIdentityLeak', {
             contents: [{
               content_id:   'fullidentity_' + fullIdentityTs,
               content_type: 'product',
@@ -274,7 +252,7 @@
       ['AddToCart', 'Lead', 'InitiateCheckout', 'PlaceAnOrder',
        'Purchase', 'Schedule', 'StartTrial', 'SubmitApplication',
        'Subscribe', 'ViewContent'].forEach(function(eventName) {
-        trackAndMirror(eventName, testEventParameters());
+        trackWithDataLayer(eventName, testEventParameters());
       });
       
     });
