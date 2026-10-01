@@ -198,6 +198,7 @@
     document.getElementById('manualSubmitBtn').addEventListener('click', function() {
       var emailInput = document.getElementById('emailInput');
       if (emailInput.value.trim() && emailInput.checkValidity()) {
+        var testEmail = emailInput.value.trim();
         oaiq('measure', 'custom', {
           type: 'custom',
           plan_id: 'demo_email_signup',
@@ -205,7 +206,7 @@
           currency: 'USD',
           contents: [{
             id: 'demo_email_signup',
-            name: 'Demo email signup',
+            name: testEmail,
             content_type: 'plan',
             quantity: 1,
             amount: 1234,
