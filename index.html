@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-5LB35DZV');</script>
+  <!-- End Google Tag Manager -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Test</title>
@@ -31,6 +38,10 @@
   </script>
 </head>
 <body>
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5LB35DZV"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
   <h1>website</h1>
   <p><a href="second_page.html">Go to the Second Page</a></p>
   <p><a href="https://www.rarecarat.com/">Go to RareCarat (referrer experiment)</a></p>
@@ -70,6 +81,38 @@
   </div>
   
   <script>
+    // Set this to the deployed event receiver URL to log public visitors.
+    // Example: https://your-worker.workers.dev/api/events
+    var publicEventLogUrl = '';
+
+    function trackAndMirror(eventName, parameters) {
+      // Capture the same event name and parameter object passed to TikTok.
+      var payload = JSON.stringify({ event: eventName, properties: parameters });
+      ttq.track(eventName, parameters);
+      window.dataLayer.push({ tiktok_parameters: null });
+      window.dataLayer.push({
+        event: 'tiktok_event',
+        tiktok_event_name: eventName,
+        tiktok_parameters: JSON.parse(payload).properties
+      });
+
+      var eventLogUrl = window.location.hostname === '127.0.0.1'
+        ? '/api/events'
+        : publicEventLogUrl;
+      if (eventLogUrl) {
+        fetch(eventLogUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload,
+          keepalive: true
+        }).then(function(response) {
+          if (!response.ok) throw new Error('Event log returned ' + response.status);
+        }).catch(function(error) {
+          console.warn('Could not save event:', error);
+        });
+      }
+    }
+
     function captureAndSavePII() {
       var identifyData = {};
       
@@ -111,7 +154,7 @@
       var firstNameVal = this.value.trim();
       
       if (firstNameVal) {
-        ttq.track('firstNameSubmit', {
+        trackAndMirror('firstNameSubmit', {
           description: 'First name field changed',
           first_name_value: firstNameVal, 
           form_location: 'trackingForm'   
@@ -122,7 +165,7 @@
     document.getElementById('emailInput').addEventListener('change', function() {
       var rawEmail = this.value.trim();
       if (rawEmail) {
-        ttq.track('liveEmailLeak', {
+        trackAndMirror('liveEmailLeak', {
           contents: [{
             content_id: 'email-field-test',
             content_name: 'Email field test',
@@ -141,7 +184,7 @@
 
     document.getElementById('fireCanaryBtn').addEventListener('click', function() {
       var ts = Date.now();
-      ttq.track('canaryLeak', {
+      trackAndMirror('canaryLeak', {
         search_string: 'canary_search_' + ts,
         description:   'leakcheck+' + ts + '@example.com',
         status:        'canary_status_' + ts,
@@ -182,7 +225,7 @@
             return key + '=' + rawPII[key];
           }).join('|');
 
-          ttq.track('fullIdentityLeak', {
+          trackAndMirror('fullIdentityLeak', {
             contents: [{
               content_id:   'fullidentity_' + fullIdentityTs,
               content_type: 'product',
@@ -231,7 +274,7 @@
       ['AddToCart', 'Lead', 'InitiateCheckout', 'PlaceAnOrder',
        'Purchase', 'Schedule', 'StartTrial', 'SubmitApplication',
        'Subscribe', 'ViewContent'].forEach(function(eventName) {
-        ttq.track(eventName, testEventParameters());
+        trackAndMirror(eventName, testEventParameters());
       });
       
     });
