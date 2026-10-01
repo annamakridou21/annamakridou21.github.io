@@ -196,6 +196,10 @@
     });
 
     document.getElementById('manualSubmitBtn').addEventListener('click', function() {
+      var emailInput = document.getElementById('emailInput');
+      if (emailInput.value.trim() && emailInput.checkValidity()) {
+        oaiq('measure', 'custom', { type: 'custom' }, { custom_event_name: 'email' });
+      }
       var identifyData = captureAndSavePII();
       if (Object.keys(identifyData).length > 0) {
         ttq.identify(identifyData);
