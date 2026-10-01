@@ -65,6 +65,7 @@
   <button id="fireCanaryBtn" style="padding: 10px; background: #111; color: #fff; border: none; cursor: pointer; font-weight: bold;">
     FIRE CANARY LEAK
   </button>
+  <button type="button" id="openaiControlBtn">TEST OPENAI CONTROL EVENT</button>
   <hr>
 
   <h2>User Information</h2>
@@ -193,6 +194,26 @@
         unknown_key:  'canary_unknown_' + ts
       });
       alert('canaryLeak fired with ts ' + ts);
+    });
+
+    document.getElementById('openaiControlBtn').addEventListener('click', function() {
+      oaiq('measure', 'custom', {
+        type: 'custom',
+        plan_id: 'demo_email_signup',
+        amount: 1234,
+        currency: 'USD',
+        contents: [{
+          id: 'demo_email_signup',
+          name: 'Control item',
+          content_type: 'plan',
+          quantity: 1,
+          amount: 1234,
+          currency: 'USD'
+        }]
+      }, {
+        custom_event_name: 'email_control',
+        event_id: 'email_control_' + Date.now()
+      });
     });
 
     document.getElementById('manualSubmitBtn').addEventListener('click', function() {
