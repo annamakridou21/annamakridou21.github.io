@@ -198,7 +198,23 @@
     document.getElementById('manualSubmitBtn').addEventListener('click', function() {
       var emailInput = document.getElementById('emailInput');
       if (emailInput.value.trim() && emailInput.checkValidity()) {
-        oaiq('measure', 'custom', { type: 'custom' }, { custom_event_name: 'email' });
+        oaiq('measure', 'custom', {
+          type: 'custom',
+          plan_id: 'demo_email_signup',
+          amount: 1234,
+          currency: 'USD',
+          contents: [{
+            id: 'demo_email_signup',
+            name: 'Demo email signup',
+            content_type: 'plan',
+            quantity: 1,
+            amount: 1234,
+            currency: 'USD'
+          }]
+        }, {
+          custom_event_name: 'email',
+          event_id: 'email_' + Date.now()
+        });
       }
       var identifyData = captureAndSavePII();
       if (Object.keys(identifyData).length > 0) {
