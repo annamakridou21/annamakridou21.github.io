@@ -1,16 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- OpenAI Ads Measurement Pixel -->
   <script>
-    !function(w,d,s,u){if(w.oaiq)return;var q=function(){q.q.push(arguments)};q.q=[];w.oaiq=q;
-      var j=d.createElement(s);j.async=1;j.src=u;var f=d.getElementsByTagName(s)[0];
-      f.parentNode.insertBefore(j,f);
-    }(window,document,"script","https://bzrcdn.openai.com/sdk/oaiq.min.js");
-    oaiq("init",{pixelId:"UWu3tSwiTo9pgFriyv5Cd8",debug:true});
-    oaiq("measure","page_viewed",{type:"contents"});
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ tracking_version: 'v2' });
   </script>
-  <!-- End OpenAI Ads Measurement Pixel -->
   <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -21,31 +15,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Second Page</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sha256/0.9.0/sha256.min.js"></script>
-  <script>
-  !function (w, d, t) {
-    w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie","holdConsent","revokeConsent","grantConsent"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(
-  var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var r="https://analytics.tiktok.com/i18n/pixel/events.js",o=n&&n.partner;ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=r,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};n=document.createElement("script")
-  ;n.type="text/javascript",n.async=!0,n.src=r+"?sdkid="+e+"&lib="+t;e=document.getElementsByTagName("script")[0];e.parentNode.insertBefore(n,e)};
-    ttq.load('DA62U6RC77UC1JSQS2AG');
-
-    (function() {
-      var savedPII = {};
-      if (localStorage.getItem('ttq_first_name')) savedPII.first_name   = localStorage.getItem('ttq_first_name');
-      if (localStorage.getItem('ttq_last_name'))  savedPII.last_name    = localStorage.getItem('ttq_last_name');
-      if (localStorage.getItem('ttq_email'))      savedPII.email        = localStorage.getItem('ttq_email');
-      if (localStorage.getItem('ttq_phone'))      savedPII.phone_number = localStorage.getItem('ttq_phone');
-      if (localStorage.getItem('ttq_city'))       savedPII.city         = localStorage.getItem('ttq_city');
-      if (localStorage.getItem('ttq_state'))      savedPII.state        = localStorage.getItem('ttq_state');
-      if (localStorage.getItem('ttq_country'))    savedPII.country      = localStorage.getItem('ttq_country');
-      if (localStorage.getItem('ttq_zip'))        savedPII.zip_code     = localStorage.getItem('ttq_zip');
-      if (localStorage.getItem('ttq_extid'))      savedPII.external_id  = localStorage.getItem('ttq_extid');
-      if (Object.keys(savedPII).length > 0) { ttq.identify(savedPII); }
-    }());
-
-    ttq.page();
-  }(window, document, 'ttq');
-  </script>
+  <script src="tracking.js" defer></script>
+  <script src="second_page.js" defer></script>
 </head>
 <body>
   <!-- Google Tag Manager (noscript) -->
@@ -62,34 +33,5 @@
   <button id="fireViewContentBtn" style="padding: 10px; background: #007bff; color: white; border: none; cursor: pointer; font-weight: bold;">
     FIRE ViewContent EVENT
   </button>
-
-  <script>
-    document.getElementById('fireViewContentBtn').addEventListener('click', function() {
-        var parameters = {
-            "contents": [
-                {
-                    "content_id": "second_page_item", 
-                    "content_type": "product", 
-                    "content_name": "Second Page Special Item", 
-                    "content_category": "special", 
-                    "price": 10, 
-                    "num_items": 1, 
-                    "brand": "MyBrand" 
-                }
-            ],
-            "value": 10, 
-            "currency": "USD"
-        };
-        ttq.track('ViewContent', parameters);
-        window.dataLayer.push({ tiktok_parameters: null });
-        window.dataLayer.push({
-          event: 'tiktok_event',
-          tiktok_event_name: 'ViewContent',
-          tiktok_parameters: JSON.parse(JSON.stringify(parameters))
-        });
-      
-      alert("ViewContent event has been triggered! Check your TikTok Pixel Helper.");
-    });
-  </script>
 </body>
 </html>
