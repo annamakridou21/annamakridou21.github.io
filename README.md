@@ -15,6 +15,8 @@ This repository is the source for [annamakridou21.github.io](https://annamakrido
 
 Both HTML pages push `tracking_version: 'v2'` into `window.dataLayer` **before** the GTM snippet. The version value is the firing condition for the base pixel tags. The `defer` scripts run in order: `tracking.js`, then `openai-matching.js` on the home page, then the page-specific listener script.
 
+The local script URLs include a `?v=20261002` query so browsers request the current tracking files after this deployment. Increase that version when changing these scripts again.
+
 There is no event receiver or historical event database in this repository. GTM routes events but does not store a browsable history of visitors or event payloads.
 
 ## Event path
