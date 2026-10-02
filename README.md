@@ -46,7 +46,7 @@ The published container has two user-defined Data Layer Variables, three trigger
 | `TikTok Pixel - Base and Page View` | Initializes pixel `DA62U6RC77UC1JSQS2AG` and calls `ttq.page()` on each page load. |
 | `TikTok Pixel - Events` | Calls `ttq.track(name, data)` or `ttq.identify(data)` for queued TikTok actions. |
 | `OpenAI Pixel - Base and Page View` | Initializes pixel `UWu3tSwiTo9pgFriyv5Cd8` and measures `page_viewed` on each page load. |
-| `OpenAI Pixel - Events` | Calls `oaiq('init', {pixelId, user})` for a queued matching update or `oaiq('measure', name, data, options)` for a queued conversion. |
+| `OpenAI Pixel - Events` | Calls `oaiq('init', {pixelId, user})` for available matching data, then `oaiq('measure', name, data, options)` when the queued action includes a conversion. |
 
 The two base tags use `Tracking v2 - Initialization`. Each event tag uses its corresponding Custom Event trigger and the `DLV - Tracking Event ID` variable.
 
@@ -58,8 +58,8 @@ The two base tags use `Tracking v2 - Initialization`. Each event tag uses its co
 | Change the first name field | `index.js` | TikTok custom `firstNameSubmit` | Description, raw `first_name_value`, form location. |
 | Change the email field | `index.js` | TikTok custom `liveEmailLeak` | Content fields, value/currency, raw email in `description`. |
 | Click **FIRE CANARY LEAK** | `index.js` | TikTok custom `canaryLeak` | Timestamped synthetic test values, including fake email and phone fields. |
-| Click **Submit Data & Identify** with any valid matching field | `index.js` -> `openai-matching.js` -> `tracking.js` | OpenAI user update | Available normalized and hashed matching fields. |
-| Click **Submit Data & Identify** with a valid email | `index.js` -> `tracking.js` | OpenAI custom `email`, after the user update | Fixed demo signup content, `amount: 1234`, `currency: 'USD'`, and unique `event_id`. |
+| Click **Submit Data & Identify** with any valid matching field but no valid email | `index.js` -> `openai-matching.js` -> `tracking.js` | OpenAI user update | Available normalized and hashed matching fields; this alone does not create an Event Stream conversion row. |
+| Click **Submit Data & Identify** with a valid email | `index.js` -> `openai-matching.js` -> `tracking.js` | OpenAI user update and custom `email` in one GTM action | Fixed demo signup content, `amount: 1234`, `currency: 'USD'`, and unique `event_id`, with matching data sent immediately before the conversion. |
 | Click **Submit Data & Identify** with any populated field | `index.js` | TikTok `identify`; TikTok custom `fullIdentityLeak` | Hashed matching fields in `identify`; raw populated form fields joined in the custom event's `contents[0].content_name`. |
 | Click **FIRE ALL EVENTS** | `index.js` | TikTok `identify` if saved hashes exist, then ten standard events | Saved hashed identity plus a fixed demo product payload for AddToCart, Lead, InitiateCheckout, PlaceAnOrder, Purchase, Schedule, StartTrial, SubmitApplication, Subscribe, and ViewContent. |
 | Click **FIRE ViewContent EVENT** on the second page | `second_page.js` | TikTok ViewContent | Second page demo product, value `10`, currency `USD`. |
@@ -82,7 +82,7 @@ Manual advanced matching and event parameters are different paths. `ttq.identify
 
 ## Manual advanced matching for OpenAI
 
-When **Submit Data & Identify** is clicked, `captureOpenAIUser()` in `index.js` reads the form. `openai-matching.js` builds a `user` object from the available valid fields. `tracking.js` queues this update and, if the email is valid, queues the custom `email` conversion afterward. The GTM OpenAI event tag calls `oaiq('init', {pixelId, user})`, then `oaiq('measure', ...)` for the conversion. The initial page view happens before form submission, so this update does not retroactively add matching data to that page view.
+When **Submit Data & Identify** is clicked, `captureOpenAIUser()` in `index.js` reads the form. `openai-matching.js` builds a `user` object from the available valid fields. If the email is valid, `tracking.js` queues one action containing both the user update and custom `email` conversion. The GTM OpenAI event tag calls `oaiq('init', {pixelId, user})` and then `oaiq('measure', ...)` during that same action. Without a valid email, it queues only a user update, which does not create an Event Stream conversion row. The initial page view happens before form submission, so this update does not retroactively add matching data to that page view.
 
 | Form field | OpenAI `user` field | Processing |
 | --- | --- | --- |
@@ -96,7 +96,7 @@ When **Submit Data & Identify** is clicked, `captureOpenAIUser()` in `index.js` 
 | State / Region | `region` | Trim; maximum 128 characters. |
 | ZIP / Postal code | `postal_code` | Trim; maximum 32 letters, digits, spaces, or hyphens. |
 
-Missing or invalid fields are omitted. Only hashes of the email, phone, customer ID, and names are sent to OpenAI through this matching path; location fields are sent as text. This OpenAI matching object is not saved in local storage and is only sent after this form submission. The browser still briefly holds the entered values while processing the form. See the [OpenAI Ads Measurement Pixel documentation](https://developers.openai.com/ads/measurement-pixel) for the accepted `user` fields and normalization rules.
+Missing or invalid fields are omitted. Only hashes of the email, phone, customer ID, and names are sent to OpenAI through this matching path; location fields are sent as text. This OpenAI matching object is not saved in local storage and is only sent after this form submission. The browser still briefly holds the entered values while processing the form. The test page no longer opens blocking alerts when the email field changes or the submit button is clicked, so those alerts cannot delay pixel requests. See the [OpenAI Ads Measurement Pixel documentation](https://developers.openai.com/ads/measurement-pixel) for the accepted `user` fields and normalization rules.
 
 ## Where to change things
 

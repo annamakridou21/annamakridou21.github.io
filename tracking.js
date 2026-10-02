@@ -65,7 +65,8 @@
       });
     },
 
-    openaiEmail: function () {
+    openaiEmail: function (user) {
+      user = user || {};
       var data = {
         type: 'custom',
         plan_id: 'demo_email_signup',
@@ -85,10 +86,12 @@
         event_id: 'email_' + Date.now() + '_' + (nextId + 1)
       };
       enqueue('site_openai_event', {
-        channel: 'openai', action: 'measure', name: 'custom', data: data, options: options
+        channel: 'openai', action: 'measure', name: 'custom', data: data, options: options,
+        user: user
       }, {
         openai_event_name: 'email',
-        openai_event_data: data
+        openai_event_data: data,
+        openai_user_fields: Object.keys(user)
       });
     }
   };

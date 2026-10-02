@@ -83,7 +83,6 @@
           value: 12.34,
           currency: 'USD'
         });
-        alert('liveEmailLeak fired with raw email: ' + rawEmail);
       }
     });
 
@@ -114,9 +113,11 @@
 
     document.getElementById('manualSubmitBtn').addEventListener('click', function() {
       var emailInput = document.getElementById('emailInput');
-      window.siteTracking.openaiUpdateUser(captureOpenAIUser());
+      var openaiUser = captureOpenAIUser();
       if (emailInput.value.trim() && emailInput.checkValidity()) {
-        window.siteTracking.openaiEmail();
+        window.siteTracking.openaiEmail(openaiUser);
+      } else {
+        window.siteTracking.openaiUpdateUser(openaiUser);
       }
       var identifyData = captureAndSavePII();
       if (Object.keys(identifyData).length > 0) {
@@ -149,7 +150,6 @@
           });
         }
 
-        alert("Data Sent!");
       }
     });
 
